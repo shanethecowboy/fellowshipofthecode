@@ -1,0 +1,40 @@
+---
+pid: 3181
+cwd: /home/shane/projects
+last_command: cd ~/projects
+last_exit_code: 0
+---
+shane@laptop3cp0:~$ nvm install --lts
+Installing latest LTS version.
+Downloading and installing node v24.13.0...
+Downloading https://nodejs.org/dist/v24.13.0/node-v24.13.0-linux-x64.tar.xz...
+###################################################################################################### 100.0%
+Computing checksum with sha256sum
+Checksums matched!
+Now using node v24.13.0 (npm v11.6.2)
+Creating default alias: default -> lts/* (-> v24.13.0)
+shane@laptop3cp0:~$ node --verson
+node: bad option: --verson
+shane@laptop3cp0:~$ node --version
+v24.13.0
+shane@laptop3cp0:~$ git --version
+git version 2.43.0
+shane@laptop3cp0:~$ sudo apt install git -y
+[sudo] password for shane: 
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+git is already the newest version (1:2.43.0-1ubuntu7.3).
+git set to manually installed.
+The following packages were automatically installed and are no longer required:
+  libdrm-nouveau2 libdrm-radeon1 libgl1-amber-dri
+  libglapi-mesa libllvm17t64 libxcb-dri2-0
+Use 'sudo apt autoremove' to remove them.
+0 upgraded, 0 newly installed, 0 to remove and 2 not upgraded.
+shane@laptop3cp0:~$ Mkdir -p ~/projects
+Command 'Mkdir' not found, did you mean:
+  command 'mkdir' from deb coreutils (9.4-3ubuntu6.1)
+Try: sudo apt install <deb name>
+shane@laptop3cp0:~$ mkdir -p ~/projects
+shane@laptop3cp0:~$ cd ~/projects
+shane@laptop3cp0:~/projects$
