@@ -1,7 +1,10 @@
 function Gandalf() {
   return (
     <div className="bio-page">
-      <h1>Gandalf</h1>
+      <div className="bio-header">
+        <div className="bio-avatar" style={{ backgroundColor: '#8a8a8a' }}>G</div>
+        <h1>Gandalf</h1>
+      </div>
       <div className="bio-details">
         <p><strong>Race:</strong> Maia (Wizard / Istari)</p>
         <p><strong>Also known as:</strong> Mithrandir, Gandalf the Grey, Gandalf the White</p>

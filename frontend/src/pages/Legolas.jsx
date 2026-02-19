@@ -1,7 +1,10 @@
 function Legolas() {
   return (
     <div className="bio-page">
-      <h1>Legolas</h1>
+      <div className="bio-header">
+        <div className="bio-avatar" style={{ backgroundColor: '#3a6b5c' }}>L</div>
+        <h1>Legolas</h1>
+      </div>
       <div className="bio-details">
         <p><strong>Race:</strong> Elf (Sindar)</p>
         <p><strong>Home:</strong> Woodland Realm of Mirkwood</p>

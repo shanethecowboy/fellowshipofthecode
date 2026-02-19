@@ -1,7 +1,10 @@
 function Boromir() {
   return (
     <div className="bio-page">
-      <h1>Boromir</h1>
+      <div className="bio-header">
+        <div className="bio-avatar" style={{ backgroundColor: '#6a5c8a' }}>B</div>
+        <h1>Boromir</h1>
+      </div>
       <div className="bio-details">
         <p><strong>Race:</strong> Man</p>
         <p><strong>Home:</strong> Minas Tirith, Gondor</p>

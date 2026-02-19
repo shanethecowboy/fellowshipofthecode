@@ -1,7 +1,10 @@
 function Frodo() {
   return (
     <div className="bio-page">
-      <h1>Frodo Baggins</h1>
+      <div className="bio-header">
+        <div className="bio-avatar" style={{ backgroundColor: '#4a6741' }}>FB</div>
+        <h1>Frodo Baggins</h1>
+      </div>
       <div className="bio-details">
         <p><strong>Race:</strong> Hobbit</p>
         <p><strong>Home:</strong> Bag End, The Shire</p>

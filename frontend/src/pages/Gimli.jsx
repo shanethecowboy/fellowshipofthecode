@@ -1,7 +1,10 @@
 function Gimli() {
   return (
     <div className="bio-page">
-      <h1>Gimli</h1>
+      <div className="bio-header">
+        <div className="bio-avatar" style={{ backgroundColor: '#8b4513' }}>G</div>
+        <h1>Gimli</h1>
+      </div>
       <div className="bio-details">
         <p><strong>Race:</strong> Dwarf</p>
         <p><strong>Home:</strong> Erebor (The Lonely Mountain)</p>

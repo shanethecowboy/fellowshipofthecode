@@ -1,7 +1,10 @@
 function Sam() {
   return (
     <div className="bio-page">
-      <h1>Samwise Gamgee</h1>
+      <div className="bio-header">
+        <div className="bio-avatar" style={{ backgroundColor: '#6b8c42' }}>SG</div>
+        <h1>Samwise Gamgee</h1>
+      </div>
       <div className="bio-details">
         <p><strong>Race:</strong> Hobbit</p>
         <p><strong>Home:</strong> Bagshot Row, The Shire</p>

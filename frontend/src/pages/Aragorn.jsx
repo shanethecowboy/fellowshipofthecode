@@ -1,7 +1,10 @@
 function Aragorn() {
   return (
     <div className="bio-page">
-      <h1>Aragorn</h1>
+      <div className="bio-header">
+        <div className="bio-avatar" style={{ backgroundColor: '#5c4a3a' }}>A</div>
+        <h1>Aragorn</h1>
+      </div>
       <div className="bio-details">
         <p><strong>Race:</strong> Man (Dunedain)</p>
         <p><strong>Also known as:</strong> Strider, Elessar, Isildur's Heir</p>

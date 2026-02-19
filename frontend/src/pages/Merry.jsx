@@ -1,7 +1,10 @@
 function Merry() {
   return (
     <div className="bio-page">
-      <h1>Meriadoc Brandybuck</h1>
+      <div className="bio-header">
+        <div className="bio-avatar" style={{ backgroundColor: '#7a8b3a' }}>MB</div>
+        <h1>Meriadoc Brandybuck</h1>
+      </div>
       <div className="bio-details">
         <p><strong>Race:</strong> Hobbit</p>
         <p><strong>Home:</strong> Brandy Hall, Buckland</p>

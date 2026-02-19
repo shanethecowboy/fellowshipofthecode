@@ -1,7 +1,10 @@
 function Pippin() {
   return (
     <div className="bio-page">
-      <h1>Peregrin Took</h1>
+      <div className="bio-header">
+        <div className="bio-avatar" style={{ backgroundColor: '#8b7a3a' }}>PT</div>
+        <h1>Peregrin Took</h1>
+      </div>
       <div className="bio-details">
         <p><strong>Race:</strong> Hobbit</p>
         <p><strong>Home:</strong> Great Smials, Tuckborough</p>
