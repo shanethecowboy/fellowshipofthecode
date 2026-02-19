@@ -2,7 +2,7 @@ function Pippin() {
   return (
     <div className="bio-page">
       <div className="bio-header">
-        <div className="bio-avatar" style={{ backgroundColor: '#8b7a3a' }}>PT</div>
+        <img className="bio-avatar" src="/images/Pippin.png" alt="Peregrin Took" />
         <h1>Peregrin Took</h1>
       </div>
       <div className="bio-details">

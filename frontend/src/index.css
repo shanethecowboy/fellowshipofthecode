@@ -26,6 +26,24 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
+  background-image: url('/images/Middle Earth Map.png');
+  background-size: cover;
+  background-attachment: fixed;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: rgba(13, 11, 8, 0.82);
+  z-index: 0;
+}
+
+#root {
+  position: relative;
+  z-index: 1;
 }
 
 h1 {

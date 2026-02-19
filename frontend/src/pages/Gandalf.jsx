@@ -2,7 +2,7 @@ function Gandalf() {
   return (
     <div className="bio-page">
       <div className="bio-header">
-        <div className="bio-avatar" style={{ backgroundColor: '#8a8a8a' }}>G</div>
+        <img className="bio-avatar" src="/images/Gandolf.png" alt="Gandalf" />
         <h1>Gandalf</h1>
       </div>
       <div className="bio-details">

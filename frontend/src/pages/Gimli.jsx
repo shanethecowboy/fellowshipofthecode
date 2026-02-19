@@ -2,7 +2,7 @@ function Gimli() {
   return (
     <div className="bio-page">
       <div className="bio-header">
-        <div className="bio-avatar" style={{ backgroundColor: '#8b4513' }}>G</div>
+        <img className="bio-avatar" src="/images/Gimli.png" alt="Gimli" />
         <h1>Gimli</h1>
       </div>
       <div className="bio-details">

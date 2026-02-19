@@ -59,6 +59,10 @@
   border: 2px solid rgba(232, 212, 139, 0.3);
 }
 
+img.avatar {
+  object-fit: cover;
+}
+
 .character-card h2 {
   margin: 0;
   font-size: 1.3rem;
@@ -100,6 +104,10 @@
   color: #fff;
   flex-shrink: 0;
   border: 3px solid rgba(232, 212, 139, 0.3);
+}
+
+img.bio-avatar {
+  object-fit: cover;
 }
 
 .bio-page h1 {

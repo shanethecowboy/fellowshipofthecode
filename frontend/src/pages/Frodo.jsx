@@ -2,7 +2,7 @@ function Frodo() {
   return (
     <div className="bio-page">
       <div className="bio-header">
-        <div className="bio-avatar" style={{ backgroundColor: '#4a6741' }}>FB</div>
+        <img className="bio-avatar" src="/images/Frodo.png" alt="Frodo Baggins" />
         <h1>Frodo Baggins</h1>
       </div>
       <div className="bio-details">

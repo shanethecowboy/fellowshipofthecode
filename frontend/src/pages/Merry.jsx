@@ -2,7 +2,7 @@ function Merry() {
   return (
     <div className="bio-page">
       <div className="bio-header">
-        <div className="bio-avatar" style={{ backgroundColor: '#7a8b3a' }}>MB</div>
+        <img className="bio-avatar" src="/images/Merry.png" alt="Meriadoc Brandybuck" />
         <h1>Meriadoc Brandybuck</h1>
       </div>
       <div className="bio-details">

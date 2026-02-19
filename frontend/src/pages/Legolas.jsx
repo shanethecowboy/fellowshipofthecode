@@ -2,7 +2,7 @@ function Legolas() {
   return (
     <div className="bio-page">
       <div className="bio-header">
-        <div className="bio-avatar" style={{ backgroundColor: '#3a6b5c' }}>L</div>
+        <img className="bio-avatar" src="/images/Legolas.png" alt="Legolas" />
         <h1>Legolas</h1>
       </div>
       <div className="bio-details">

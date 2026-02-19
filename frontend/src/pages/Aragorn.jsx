@@ -2,7 +2,7 @@ function Aragorn() {
   return (
     <div className="bio-page">
       <div className="bio-header">
-        <div className="bio-avatar" style={{ backgroundColor: '#5c4a3a' }}>A</div>
+        <img className="bio-avatar" src="/images/Aragon.png" alt="Aragorn" />
         <h1>Aragorn</h1>
       </div>
       <div className="bio-details">
