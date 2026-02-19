@@ -1,42 +1,97 @@
-#root {
-  max-width: 1280px;
+.content {
+  max-width: 960px;
   margin: 0 auto;
   padding: 2rem;
+}
+
+/* Home page */
+.home {
   text-align: center;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+.home h1 {
+  font-size: 2.4rem;
+  color: #e8d48b;
+  margin-bottom: 0.5rem;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.subtitle {
+  color: #a89a6e;
+  font-size: 1.1rem;
+  margin-bottom: 2rem;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+.character-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
 }
 
-.card {
-  padding: 2em;
+.character-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 20px;
+  background-color: #1a1510;
+  border: 1px solid #3d3422;
+  border-radius: 8px;
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.2s, transform 0.2s;
 }
 
-.read-the-docs {
-  color: #888;
+.character-card:hover {
+  border-color: #8b6914;
+  transform: translateY(-2px);
+}
+
+.character-card h2 {
+  margin: 0;
+  font-size: 1.3rem;
+  color: #e8d48b;
+}
+
+.character-card .race {
+  font-size: 0.85rem;
+  color: #a89a6e;
+}
+
+.character-card .role {
+  font-size: 0.9rem;
+  color: #c4a55a;
+}
+
+/* Bio pages */
+.bio-page {
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.bio-page h1 {
+  font-size: 2.2rem;
+  color: #e8d48b;
+  margin-bottom: 1rem;
+}
+
+.bio-details {
+  background-color: #1a1510;
+  border: 1px solid #3d3422;
+  border-radius: 8px;
+  padding: 16px 20px;
+  margin-bottom: 1.5rem;
+}
+
+.bio-details p {
+  margin: 4px 0;
+  color: #c4a55a;
+}
+
+.bio-details strong {
+  color: #e8d48b;
+}
+
+.bio-text p {
+  line-height: 1.7;
+  color: rgba(255, 255, 255, 0.85);
+  margin-bottom: 1rem;
 }
