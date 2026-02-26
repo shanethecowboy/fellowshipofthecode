@@ -11,6 +11,7 @@ import Gimli from './pages/Gimli'
 import Boromir from './pages/Boromir'
 import Merry from './pages/Merry'
 import Pippin from './pages/Pippin'
+import Referee from './pages/Referee'
 import './App.css'
 
 function App() {
@@ -30,6 +31,7 @@ function App() {
           <Route path="/boromir" element={<Boromir />} />
           <Route path="/merry" element={<Merry />} />
           <Route path="/pippin" element={<Pippin />} />
+          <Route path="/referee" element={<Referee />} />
         </Routes>
       </main>
     </>

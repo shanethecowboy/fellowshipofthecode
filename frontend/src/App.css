@@ -79,6 +79,33 @@ img.avatar {
   color: #c4a55a;
 }
 
+/* Referee page */
+.referee-page h1 {
+  font-size: 2.4rem;
+  color: #e8d48b;
+  margin-bottom: 0.5rem;
+}
+
+.video-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  margin-top: 1.5rem;
+}
+
+.video-item h2 {
+  font-size: 1.2rem;
+  color: #e8d48b;
+  margin-bottom: 0.5rem;
+}
+
+.video-item video {
+  width: 100%;
+  border-radius: 8px;
+  border: 1px solid #3d3422;
+  background-color: #000;
+}
+
 /* Athletes page */
 .athletes-page h1 {
   font-size: 2.4rem;
