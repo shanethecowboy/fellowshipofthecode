@@ -1,6 +1,7 @@
 import { Routes, Route } from 'react-router-dom'
 import Navbar from './components/Navbar'
 import Home from './pages/Home'
+import Fellowship from './pages/Fellowship'
 import Frodo from './pages/Frodo'
 import Sam from './pages/Sam'
 import Gandalf from './pages/Gandalf'
@@ -19,6 +20,7 @@ function App() {
       <main className="content">
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/fellowship" element={<Fellowship />} />
           <Route path="/frodo" element={<Frodo />} />
           <Route path="/sam" element={<Sam />} />
           <Route path="/gandalf" element={<Gandalf />} />

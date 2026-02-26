@@ -16,7 +16,8 @@ const characters = [
 function Navbar() {
   return (
     <nav className="navbar">
-      <NavLink to="/" end className="nav-tab">Home</NavLink>
+      <NavLink to="/" end className="nav-tab">Athletes</NavLink>
+      <NavLink to="/fellowship" className="nav-tab">Fellowship</NavLink>
       {characters.map(({ path, name }) => (
         <NavLink key={path} to={path} className="nav-tab">{name}</NavLink>
       ))}
