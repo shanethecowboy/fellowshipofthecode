@@ -14,6 +14,36 @@ type Athlete struct {
 	PR    string `json:"pr"`
 }
 
+type Meet struct {
+	ID       int    `json:"id"`
+	Name     string `json:"name"`
+	Date     string `json:"date"`
+	Location string `json:"location"`
+}
+
+type Result struct {
+	ID        int    `json:"id"`
+	AthleteID int    `json:"athleteId"`
+	MeetID    int    `json:"meetId"`
+	Time      string `json:"time"`
+	Place     int    `json:"place"`
+}
+
+var meets = []Meet{
+	{ID: 1, Name: "Riverside Invitational", Date: "2026-04-05", Location: "Riverside Park, Springfield"},
+	{ID: 2, Name: "Spring Classic", Date: "2026-04-19", Location: "Lakeview High School"},
+	{ID: 3, Name: "District Championships", Date: "2026-05-10", Location: "Central Stadium"},
+}
+
+var results = []Result{
+	{ID: 1, AthleteID: 1, MeetID: 1, Time: "18:45", Place: 3},
+	{ID: 2, AthleteID: 2, MeetID: 1, Time: "16:52", Place: 1},
+	{ID: 3, AthleteID: 3, MeetID: 1, Time: "19:30", Place: 5},
+	{ID: 4, AthleteID: 4, MeetID: 1, Time: "16:10", Place: 2},
+	{ID: 5, AthleteID: 1, MeetID: 2, Time: "18:32", Place: 2},
+	{ID: 6, AthleteID: 5, MeetID: 2, Time: "20:44", Place: 8},
+}
+
 var athletes = []Athlete{
 	{Name: "Emma Johnson", Grade: "12", PR: "18:32"},
 	{Name: "Liam Carter", Grade: "11", PR: "16:45"},
@@ -41,6 +71,8 @@ func main() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/health", healthHandler)
 	mux.HandleFunc("/api/athletes", athletesHandler)
+	mux.HandleFunc("/api/meets", meetsHandler)
+	mux.HandleFunc("/api/results", resultsHandler)
 	mux.Handle("/", spaHandler(staticDir))
 
 	log.Printf("Server starting on %s (static files from %s)", port, staticDir)
@@ -52,6 +84,18 @@ func main() {
 func healthHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]string{"status": "ok"})
+}
+
+func meetsHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	json.NewEncoder(w).Encode(meets)
+}
+
+func resultsHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	json.NewEncoder(w).Encode(results)
 }
 
 func athletesHandler(w http.ResponseWriter, r *http.Request) {
