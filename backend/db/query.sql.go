@@ -272,6 +272,39 @@ func (q *Queries) DeleteMeet(ctx context.Context, id int32) error {
 	return err
 }
 
+const createAthlete = `INSERT INTO athletes (name, grade, event, pr) VALUES (?, ?, ?, ?)`
+
+type CreateAthleteParams struct {
+	Name  string `json:"name"`
+	Grade string `json:"grade"`
+	Event string `json:"event"`
+	Pr    string `json:"pr"`
+}
+
+func (q *Queries) CreateAthlete(ctx context.Context, arg CreateAthleteParams) (int64, error) {
+	result, err := q.db.ExecContext(ctx, createAthlete, arg.Name, arg.Grade, arg.Event, arg.Pr)
+	if err != nil {
+		return 0, err
+	}
+	return result.LastInsertId()
+}
+
+const createMeet = `INSERT INTO meets (name, date, location) VALUES (?, ?, ?)`
+
+type CreateMeetParams struct {
+	Name     string    `json:"name"`
+	Date     time.Time `json:"date"`
+	Location string    `json:"location"`
+}
+
+func (q *Queries) CreateMeet(ctx context.Context, arg CreateMeetParams) (int64, error) {
+	result, err := q.db.ExecContext(ctx, createMeet, arg.Name, arg.Date, arg.Location)
+	if err != nil {
+		return 0, err
+	}
+	return result.LastInsertId()
+}
+
 func (q *Queries) GetTopTimes(ctx context.Context) ([]GetTopTimesRow, error) {
 	rows, err := q.db.QueryContext(ctx, getTopTimes)
 	if err != nil {

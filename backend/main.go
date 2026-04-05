@@ -50,10 +50,12 @@ func main() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/health", healthHandler)
 	mux.HandleFunc("GET /api/athletes", s.getAllAthletes)
+	mux.HandleFunc("POST /api/athletes", s.createAthlete)
 	mux.HandleFunc("GET /api/athletes/{id}", s.getAthlete)
 	mux.HandleFunc("PUT /api/athletes/{id}", s.updateAthlete)
 	mux.HandleFunc("DELETE /api/athletes/{id}", s.deleteAthlete)
 	mux.HandleFunc("GET /api/meets", s.getAllMeets)
+	mux.HandleFunc("POST /api/meets", s.createMeet)
 	mux.HandleFunc("PUT /api/meets/{id}", s.updateMeet)
 	mux.HandleFunc("DELETE /api/meets/{id}", s.deleteMeet)
 	mux.HandleFunc("GET /api/meets/{id}/results", s.getResultsForMeet)
@@ -198,6 +200,21 @@ func (s *server) updateAthlete(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNoContent)
 }
 
+// POST /api/athletes  body: {"name":"...","grade":"12","event":"5K","pr":"18:45"}
+func (s *server) createAthlete(w http.ResponseWriter, r *http.Request) {
+	var params db.CreateAthleteParams
+	if err := json.NewDecoder(r.Body).Decode(&params); err != nil {
+		http.Error(w, "invalid request body", http.StatusBadRequest)
+		return
+	}
+	id, err := s.queries.CreateAthlete(r.Context(), params)
+	if err != nil {
+		http.Error(w, "failed to create athlete", http.StatusInternalServerError)
+		return
+	}
+	writeJSON(w, http.StatusCreated, map[string]int64{"id": id})
+}
+
 // DELETE /api/athletes/:id
 func (s *server) deleteAthlete(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.ParseInt(r.PathValue("id"), 10, 32)
@@ -210,6 +227,21 @@ func (s *server) deleteAthlete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.WriteHeader(http.StatusNoContent)
+}
+
+// POST /api/meets  body: {"name":"...","date":"2026-09-01","location":"..."}
+func (s *server) createMeet(w http.ResponseWriter, r *http.Request) {
+	var params db.CreateMeetParams
+	if err := json.NewDecoder(r.Body).Decode(&params); err != nil {
+		http.Error(w, "invalid request body", http.StatusBadRequest)
+		return
+	}
+	id, err := s.queries.CreateMeet(r.Context(), params)
+	if err != nil {
+		http.Error(w, "failed to create meet", http.StatusInternalServerError)
+		return
+	}
+	writeJSON(w, http.StatusCreated, map[string]int64{"id": id})
 }
 
 // PUT /api/meets/:id
