@@ -1,2 +1,4 @@
 build/
 frontend/public/videos/
+backend/backend
+backend/fotc.db

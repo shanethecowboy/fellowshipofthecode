@@ -73,6 +73,7 @@ WorkingDirectory=$APP_DIR
 ExecStart=$APP_DIR/server
 Environment=PORT=80
 Environment=STATIC_DIR=$APP_DIR/static
+Environment=DATABASE_URL=fotc:xc_jones_2026@unix(/var/run/mysqld/mysqld.sock)/fotc?parseTime=true
 Restart=always
 RestartSec=5
 
