@@ -1,6 +1,11 @@
-import { useQuery } from '@tanstack/react-query'
+import { useState } from 'react'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 
 function Meets() {
+  const queryClient = useQueryClient()
+  const [editingId, setEditingId] = useState(null)
+  const [editForm, setEditForm] = useState({})
+
   const { data: meets, isLoading: meetsLoading, isError: meetsError } = useQuery({
     queryKey: ['meets'],
     queryFn: () => fetch('/api/meets').then(res => {
@@ -17,13 +22,28 @@ function Meets() {
     }),
   })
 
-  const { data: athletes } = useQuery({
-    queryKey: ['athletes'],
-    queryFn: () => fetch('/api/athletes').then(res => {
-      if (!res.ok) throw new Error('Failed to load athletes')
-      return res.json()
-    }),
+  const updateMutation = useMutation({
+    mutationFn: ({ id, ...data }) => fetch(`/api/meets/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    }).then(res => { if (!res.ok) throw new Error('Failed to update') }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['meets'] })
+      setEditingId(null)
+    },
   })
+
+  const deleteMutation = useMutation({
+    mutationFn: (id) => fetch(`/api/meets/${id}`, { method: 'DELETE' })
+      .then(res => { if (!res.ok) throw new Error('Failed to delete') }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['meets'] }),
+  })
+
+  const startEdit = (m) => {
+    setEditingId(m.id)
+    setEditForm({ name: m.name, date: m.date.slice(0, 10), location: m.location })
+  }
 
   return (
     <div className="meets-page">
@@ -39,14 +59,33 @@ function Meets() {
               <th>Name</th>
               <th>Date</th>
               <th>Location</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
             {meets.map(m => (
               <tr key={m.id}>
-                <td>{m.name}</td>
-                <td>{m.date}</td>
-                <td>{m.location}</td>
+                {editingId === m.id ? (
+                  <>
+                    <td><input value={editForm.name} onChange={e => setEditForm(f => ({ ...f, name: e.target.value }))} /></td>
+                    <td><input type="date" value={editForm.date} onChange={e => setEditForm(f => ({ ...f, date: e.target.value }))} /></td>
+                    <td><input value={editForm.location} onChange={e => setEditForm(f => ({ ...f, location: e.target.value }))} /></td>
+                    <td>
+                      <button onClick={() => updateMutation.mutate({ id: m.id, ...editForm, date: new Date(editForm.date + 'T00:00:00') })}>Save</button>
+                      <button onClick={() => setEditingId(null)} style={{ marginLeft: '0.5rem' }}>Cancel</button>
+                    </td>
+                  </>
+                ) : (
+                  <>
+                    <td>{m.name}</td>
+                    <td>{m.date.slice(0, 10)}</td>
+                    <td>{m.location}</td>
+                    <td>
+                      <button onClick={() => startEdit(m)}>Edit</button>
+                      <button onClick={() => deleteMutation.mutate(m.id)} style={{ marginLeft: '0.5rem' }}>Delete</button>
+                    </td>
+                  </>
+                )}
               </tr>
             ))}
           </tbody>
@@ -56,7 +95,7 @@ function Meets() {
       <h2 style={{ marginTop: '2rem' }}>Results</h2>
       {resultsLoading && <p>Loading results...</p>}
       {resultsError && <p className="error">Failed to load results.</p>}
-      {results && meets && athletes && (
+      {results && (
         <table className="athletes-table">
           <thead>
             <tr>
@@ -67,12 +106,12 @@ function Meets() {
             </tr>
           </thead>
           <tbody>
-            {results.sort((a, b) => a.place - b.place).map(r => (
+            {results.map(r => (
               <tr key={r.id}>
                 <td>{r.place}</td>
-                <td>{athletes.find(a => a.id === r.athleteId)?.name ?? `Athlete ${r.athleteId}`}</td>
+                <td>{r.athleteName}</td>
                 <td>{r.time}</td>
-                <td>{meets.find(m => m.id === r.meetId)?.name ?? r.meetId}</td>
+                <td>{r.meetName}</td>
               </tr>
             ))}
           </tbody>

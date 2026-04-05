@@ -7,6 +7,7 @@ package db
 
 import (
 	"context"
+	"time"
 )
 
 const createResult = `-- name: CreateResult :execlastid
@@ -179,6 +180,96 @@ type GetTopTimesRow struct {
 	MeetName    string `json:"meetName"`
 	Time        string `json:"time"`
 	Place       int32  `json:"place"`
+}
+
+const getAllResults = `-- name: GetAllResults :many
+SELECT r.id, r.athlete_id, a.name AS athlete_name, r.meet_id, m.name AS meet_name, r.time, r.place
+FROM results r
+JOIN athletes a ON a.id = r.athlete_id
+JOIN meets m ON m.id = r.meet_id
+ORDER BY r.meet_id ASC, r.place ASC
+`
+
+func (q *Queries) GetAllResults(ctx context.Context) ([]GetTopTimesRow, error) {
+	rows, err := q.db.QueryContext(ctx, getAllResults)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetTopTimesRow
+	for rows.Next() {
+		var i GetTopTimesRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.AthleteID,
+			&i.AthleteName,
+			&i.MeetID,
+			&i.MeetName,
+			&i.Time,
+			&i.Place,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const updateAthlete = `-- name: UpdateAthlete :exec
+UPDATE athletes SET name = ?, grade = ?, event = ?, pr = ? WHERE id = ?
+`
+
+type UpdateAthleteParams struct {
+	Name  string `json:"name"`
+	Grade string `json:"grade"`
+	Event string `json:"event"`
+	Pr    string `json:"pr"`
+	ID    int32  `json:"id"`
+}
+
+func (q *Queries) UpdateAthlete(ctx context.Context, arg UpdateAthleteParams) error {
+	_, err := q.db.ExecContext(ctx, updateAthlete, arg.Name, arg.Grade, arg.Event, arg.Pr, arg.ID)
+	return err
+}
+
+const deleteAthlete = `-- name: DeleteAthlete :exec
+DELETE FROM athletes WHERE id = ?
+`
+
+func (q *Queries) DeleteAthlete(ctx context.Context, id int32) error {
+	_, err := q.db.ExecContext(ctx, deleteAthlete, id)
+	return err
+}
+
+const updateMeet = `-- name: UpdateMeet :exec
+UPDATE meets SET name = ?, date = ?, location = ? WHERE id = ?
+`
+
+type UpdateMeetParams struct {
+	Name     string    `json:"name"`
+	Date     time.Time `json:"date"`
+	Location string    `json:"location"`
+	ID       int32     `json:"id"`
+}
+
+func (q *Queries) UpdateMeet(ctx context.Context, arg UpdateMeetParams) error {
+	_, err := q.db.ExecContext(ctx, updateMeet, arg.Name, arg.Date, arg.Location, arg.ID)
+	return err
+}
+
+const deleteMeet = `-- name: DeleteMeet :exec
+DELETE FROM meets WHERE id = ?
+`
+
+func (q *Queries) DeleteMeet(ctx context.Context, id int32) error {
+	_, err := q.db.ExecContext(ctx, deleteMeet, id)
+	return err
 }
 
 func (q *Queries) GetTopTimes(ctx context.Context) ([]GetTopTimesRow, error) {

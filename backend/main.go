@@ -51,8 +51,13 @@ func main() {
 	mux.HandleFunc("/health", healthHandler)
 	mux.HandleFunc("GET /api/athletes", s.getAllAthletes)
 	mux.HandleFunc("GET /api/athletes/{id}", s.getAthlete)
+	mux.HandleFunc("PUT /api/athletes/{id}", s.updateAthlete)
+	mux.HandleFunc("DELETE /api/athletes/{id}", s.deleteAthlete)
 	mux.HandleFunc("GET /api/meets", s.getAllMeets)
+	mux.HandleFunc("PUT /api/meets/{id}", s.updateMeet)
+	mux.HandleFunc("DELETE /api/meets/{id}", s.deleteMeet)
 	mux.HandleFunc("GET /api/meets/{id}/results", s.getResultsForMeet)
+	mux.HandleFunc("GET /api/results", s.getAllResults)
 	mux.HandleFunc("POST /api/results", s.createResult)
 	mux.HandleFunc("GET /api/top-times", s.getTopTimes)
 	mux.Handle("/", spaHandler(staticDir))
@@ -171,6 +176,87 @@ func (s *server) getTopTimes(w http.ResponseWriter, r *http.Request) {
 		times = []db.GetTopTimesRow{}
 	}
 	writeJSON(w, http.StatusOK, times)
+}
+
+// PUT /api/athletes/:id
+func (s *server) updateAthlete(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.ParseInt(r.PathValue("id"), 10, 32)
+	if err != nil {
+		http.Error(w, "invalid id", http.StatusBadRequest)
+		return
+	}
+	var params db.UpdateAthleteParams
+	if err := json.NewDecoder(r.Body).Decode(&params); err != nil {
+		http.Error(w, "invalid request body", http.StatusBadRequest)
+		return
+	}
+	params.ID = int32(id)
+	if err := s.queries.UpdateAthlete(r.Context(), params); err != nil {
+		http.Error(w, "failed to update athlete", http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusNoContent)
+}
+
+// DELETE /api/athletes/:id
+func (s *server) deleteAthlete(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.ParseInt(r.PathValue("id"), 10, 32)
+	if err != nil {
+		http.Error(w, "invalid id", http.StatusBadRequest)
+		return
+	}
+	if err := s.queries.DeleteAthlete(r.Context(), int32(id)); err != nil {
+		http.Error(w, "failed to delete athlete", http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusNoContent)
+}
+
+// PUT /api/meets/:id
+func (s *server) updateMeet(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.ParseInt(r.PathValue("id"), 10, 32)
+	if err != nil {
+		http.Error(w, "invalid id", http.StatusBadRequest)
+		return
+	}
+	var params db.UpdateMeetParams
+	if err := json.NewDecoder(r.Body).Decode(&params); err != nil {
+		http.Error(w, "invalid request body", http.StatusBadRequest)
+		return
+	}
+	params.ID = int32(id)
+	if err := s.queries.UpdateMeet(r.Context(), params); err != nil {
+		http.Error(w, "failed to update meet", http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusNoContent)
+}
+
+// DELETE /api/meets/:id
+func (s *server) deleteMeet(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.ParseInt(r.PathValue("id"), 10, 32)
+	if err != nil {
+		http.Error(w, "invalid id", http.StatusBadRequest)
+		return
+	}
+	if err := s.queries.DeleteMeet(r.Context(), int32(id)); err != nil {
+		http.Error(w, "failed to delete meet", http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusNoContent)
+}
+
+// GET /api/results
+func (s *server) getAllResults(w http.ResponseWriter, r *http.Request) {
+	results, err := s.queries.GetAllResults(r.Context())
+	if err != nil {
+		http.Error(w, "failed to get results", http.StatusInternalServerError)
+		return
+	}
+	if results == nil {
+		results = []db.GetTopTimesRow{}
+	}
+	writeJSON(w, http.StatusOK, results)
 }
 
 // POST /api/results  body: {"athlete_id":1,"meet_id":1,"time":"18:45","place":3}
