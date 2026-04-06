@@ -1,8 +1,8 @@
 package main
 
 import (
-	"context"
 	"database/sql"
+	"embed"
 	"encoding/json"
 	"errors"
 	"log"
@@ -13,7 +13,11 @@ import (
 
 	"fellowshipofthecode.com/backend/db"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/pressly/goose/v3"
 )
+
+//go:embed db/migrations/*.sql
+var embedMigrations embed.FS
 
 type server struct {
 	queries *db.Queries
@@ -41,7 +45,7 @@ func main() {
 	}
 	defer sqlDB.Close()
 
-	if err := migrate(sqlDB); err != nil {
+	if err := runMigrations(sqlDB); err != nil {
 		log.Fatal(err)
 	}
 
@@ -70,37 +74,12 @@ func main() {
 	}
 }
 
-func migrate(sqlDB *sql.DB) error {
-	stmts := []string{
-		`CREATE TABLE IF NOT EXISTS athletes (
-			id    INT          PRIMARY KEY AUTO_INCREMENT,
-			name  VARCHAR(100) NOT NULL,
-			grade VARCHAR(2)   NOT NULL,
-			event VARCHAR(20)  NOT NULL,
-			pr    VARCHAR(10)  NOT NULL
-		)`,
-		`CREATE TABLE IF NOT EXISTS meets (
-			id       INT          PRIMARY KEY AUTO_INCREMENT,
-			name     VARCHAR(100) NOT NULL,
-			date     DATE         NOT NULL,
-			location VARCHAR(150) NOT NULL
-		)`,
-		`CREATE TABLE IF NOT EXISTS results (
-			id         INT         PRIMARY KEY AUTO_INCREMENT,
-			athlete_id INT         NOT NULL,
-			meet_id    INT         NOT NULL,
-			time       VARCHAR(10) NOT NULL,
-			place      INT         NOT NULL,
-			FOREIGN KEY (athlete_id) REFERENCES athletes(id),
-			FOREIGN KEY (meet_id)    REFERENCES meets(id)
-		)`,
+func runMigrations(sqlDB *sql.DB) error {
+	goose.SetBaseFS(embedMigrations)
+	if err := goose.SetDialect("mysql"); err != nil {
+		return err
 	}
-	for _, s := range stmts {
-		if _, err := sqlDB.ExecContext(context.Background(), s); err != nil {
-			return err
-		}
-	}
-	return nil
+	return goose.Up(sqlDB, "db/migrations")
 }
 
 func healthHandler(w http.ResponseWriter, r *http.Request) {

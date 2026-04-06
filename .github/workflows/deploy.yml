@@ -1,0 +1,59 @@
+name: Build and Deploy
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: backend/go.mod
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Build frontend
+        working-directory: frontend
+        run: |
+          npm ci
+          npm run build
+
+      - name: Build backend
+        working-directory: backend
+        run: |
+          mkdir -p ../build
+          GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o ../build/server .
+
+      - name: Deploy to Lightsail
+        env:
+          LIGHTSAIL_SSH_KEY: ${{ secrets.LIGHTSAIL_SSH_KEY }}
+        run: |
+          echo "$LIGHTSAIL_SSH_KEY" > /tmp/lightsail.pem
+          chmod 600 /tmp/lightsail.pem
+
+          SSH="ssh -i /tmp/lightsail.pem -o StrictHostKeyChecking=no ubuntu@3.222.89.230"
+          SCP="scp -i /tmp/lightsail.pem -o StrictHostKeyChecking=no"
+
+          # Stop the service so the binary isn't locked
+          $SSH "sudo systemctl stop fellowship"
+
+          # Upload backend binary
+          $SCP build/server ubuntu@3.222.89.230:/opt/fellowship/server
+
+          # Upload frontend (index.html + assets/ directly into static/)
+          $SCP frontend/dist/index.html ubuntu@3.222.89.230:/opt/fellowship/static/index.html
+          $SCP -r frontend/dist/assets ubuntu@3.222.89.230:/opt/fellowship/static/
+
+          # Fix permissions and restart
+          $SSH "chmod +x /opt/fellowship/server && sudo systemctl start fellowship"
+
+          rm -f /tmp/lightsail.pem
