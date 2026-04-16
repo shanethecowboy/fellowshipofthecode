@@ -4,6 +4,7 @@ import { useAuth } from '@/context/AuthContext'
 import { Button } from '@/components/ui/button'
 
 export default function Login() {
+  const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
@@ -18,10 +19,10 @@ export default function Login() {
       const res = await fetch('/api/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ password }),
+        body: JSON.stringify({ username, password }),
       })
       if (!res.ok) {
-        setError('Invalid password.')
+        setError('Invalid username or password.')
         return
       }
       const { token } = await res.json()
@@ -39,6 +40,17 @@ export default function Login() {
       <div className="bg-card border border-border rounded-xl p-8 w-full max-w-sm flex flex-col gap-5">
         <h1 className="text-2xl font-bold text-primary">Admin Login</h1>
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          <div className="flex flex-col gap-1">
+            <label className="text-xs uppercase tracking-wide text-muted-foreground">Username</label>
+            <input
+              type="text"
+              className="bg-input border border-border rounded px-3 py-2 text-sm focus:outline-none focus:border-primary"
+              value={username}
+              onChange={e => setUsername(e.target.value)}
+              placeholder="Enter admin username"
+              required
+            />
+          </div>
           <div className="flex flex-col gap-1">
             <label className="text-xs uppercase tracking-wide text-muted-foreground">Password</label>
             <input

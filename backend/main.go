@@ -289,14 +289,16 @@ func (s *server) createResult(w http.ResponseWriter, r *http.Request) {
 
 func loginHandler(w http.ResponseWriter, r *http.Request) {
 	var body struct {
+		Username string `json:"username"`
 		Password string `json:"password"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 		http.Error(w, "invalid request body", http.StatusBadRequest)
 		return
 	}
+	adminUsername := os.Getenv("ADMIN_USERNAME")
 	adminPassword := os.Getenv("ADMIN_PASSWORD")
-	if adminPassword == "" || body.Password != adminPassword {
+	if adminUsername == "" || adminPassword == "" || body.Username != adminUsername || body.Password != adminPassword {
 		http.Error(w, "unauthorized", http.StatusUnauthorized)
 		return
 	}
