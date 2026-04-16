@@ -10,6 +10,7 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
+	"strings"
 
 	"fellowshipofthecode.com/backend/db"
 	_ "github.com/go-sql-driver/mysql"
@@ -53,18 +54,19 @@ func main() {
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("/health", healthHandler)
+	mux.HandleFunc("POST /api/login", loginHandler)
 	mux.HandleFunc("GET /api/athletes", s.getAllAthletes)
-	mux.HandleFunc("POST /api/athletes", s.createAthlete)
+	mux.HandleFunc("POST /api/athletes", requireAuth(s.createAthlete))
 	mux.HandleFunc("GET /api/athletes/{id}", s.getAthlete)
-	mux.HandleFunc("PUT /api/athletes/{id}", s.updateAthlete)
-	mux.HandleFunc("DELETE /api/athletes/{id}", s.deleteAthlete)
+	mux.HandleFunc("PUT /api/athletes/{id}", requireAuth(s.updateAthlete))
+	mux.HandleFunc("DELETE /api/athletes/{id}", requireAuth(s.deleteAthlete))
 	mux.HandleFunc("GET /api/meets", s.getAllMeets)
-	mux.HandleFunc("POST /api/meets", s.createMeet)
-	mux.HandleFunc("PUT /api/meets/{id}", s.updateMeet)
-	mux.HandleFunc("DELETE /api/meets/{id}", s.deleteMeet)
+	mux.HandleFunc("POST /api/meets", requireAuth(s.createMeet))
+	mux.HandleFunc("PUT /api/meets/{id}", requireAuth(s.updateMeet))
+	mux.HandleFunc("DELETE /api/meets/{id}", requireAuth(s.deleteMeet))
 	mux.HandleFunc("GET /api/meets/{id}/results", s.getResultsForMeet)
 	mux.HandleFunc("GET /api/results", s.getAllResults)
-	mux.HandleFunc("POST /api/results", s.createResult)
+	mux.HandleFunc("POST /api/results", requireAuth(s.createResult))
 	mux.HandleFunc("GET /api/top-times", s.getTopTimes)
 	mux.Handle("/", spaHandler(staticDir))
 
@@ -283,6 +285,34 @@ func (s *server) createResult(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	writeJSON(w, http.StatusCreated, map[string]int64{"id": id})
+}
+
+func loginHandler(w http.ResponseWriter, r *http.Request) {
+	var body struct {
+		Password string `json:"password"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		http.Error(w, "invalid request body", http.StatusBadRequest)
+		return
+	}
+	adminPassword := os.Getenv("ADMIN_PASSWORD")
+	if adminPassword == "" || body.Password != adminPassword {
+		http.Error(w, "unauthorized", http.StatusUnauthorized)
+		return
+	}
+	writeJSON(w, http.StatusOK, map[string]string{"token": adminPassword})
+}
+
+func requireAuth(next http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		token := strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer ")
+		adminPassword := os.Getenv("ADMIN_PASSWORD")
+		if adminPassword == "" || token != adminPassword {
+			http.Error(w, "unauthorized", http.StatusUnauthorized)
+			return
+		}
+		next(w, r)
+	}
 }
 
 func writeJSON(w http.ResponseWriter, status int, v any) {

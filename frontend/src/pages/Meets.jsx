@@ -1,15 +1,14 @@
-import { useState } from 'react'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-
-const emptyMeetForm = { name: '', date: '', location: '' }
+import { useQuery } from '@tanstack/react-query'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
 
 function Meets() {
-  const queryClient = useQueryClient()
-  const [editingId, setEditingId] = useState(null)
-  const [editForm, setEditForm] = useState({})
-  const [showAdd, setShowAdd] = useState(false)
-  const [addForm, setAddForm] = useState(emptyMeetForm)
-
   const { data: meets, isLoading: meetsLoading, isError: meetsError } = useQuery({
     queryKey: ['meets'],
     queryFn: () => fetch('/api/meets').then(res => {
@@ -26,161 +25,58 @@ function Meets() {
     }),
   })
 
-  const updateMutation = useMutation({
-    mutationFn: ({ id, ...data }) => fetch(`/api/meets/${id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
-    }).then(res => { if (!res.ok) throw new Error('Failed to update') }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['meets'] })
-      setEditingId(null)
-    },
-  })
-
-  const deleteMutation = useMutation({
-    mutationFn: (id) => fetch(`/api/meets/${id}`, { method: 'DELETE' })
-      .then(res => { if (!res.ok) throw new Error('Failed to delete') }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['meets'] }),
-  })
-
-  const createMutation = useMutation({
-    mutationFn: (data) => fetch('/api/meets', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ...data, date: new Date(data.date + 'T00:00:00') }),
-    }).then(res => { if (!res.ok) throw new Error('Failed to create') }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['meets'] })
-      setShowAdd(false)
-      setAddForm(emptyMeetForm)
-    },
-  })
-
-  const startEdit = (m) => {
-    setEditingId(m.id)
-    setEditForm({ name: m.name, date: m.date.slice(0, 10), location: m.location })
-  }
-
   return (
-    <div className="meets-page">
-      <h1>Meets</h1>
+    <div>
+      <h1 className="text-4xl font-bold text-primary mb-6">Meets</h1>
 
-      <h2>Upcoming Meets</h2>
-      {meetsLoading && <p>Loading meets...</p>}
-      {meetsError && <p className="error">Failed to load meets.</p>}
+      <h2 className="text-xl font-semibold text-foreground mb-3">Schedule</h2>
+      {meetsLoading && <p className="text-muted-foreground">Loading meets...</p>}
+      {meetsError && <p className="text-destructive">Failed to load meets.</p>}
       {meets && (
-        <>
-          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '1rem' }}>
-            <button className="add-btn" onClick={() => setShowAdd(true)}>+ Add Meet</button>
-          </div>
-          <table className="athletes-table">
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Date</th>
-                <th>Location</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {meets.map(m => (
-                <tr key={m.id}>
-                  {editingId === m.id ? (
-                    <>
-                      <td><input value={editForm.name} onChange={e => setEditForm(f => ({ ...f, name: e.target.value }))} /></td>
-                      <td><input type="date" value={editForm.date} onChange={e => setEditForm(f => ({ ...f, date: e.target.value }))} /></td>
-                      <td><input value={editForm.location} onChange={e => setEditForm(f => ({ ...f, location: e.target.value }))} /></td>
-                      <td>
-                        <button onClick={() => updateMutation.mutate({ id: m.id, ...editForm, date: new Date(editForm.date + 'T00:00:00') })}>Save</button>
-                        <button onClick={() => setEditingId(null)} style={{ marginLeft: '0.5rem' }}>Cancel</button>
-                      </td>
-                    </>
-                  ) : (
-                    <>
-                      <td>{m.name}</td>
-                      <td>{m.date.slice(0, 10)}</td>
-                      <td>{m.location}</td>
-                      <td>
-                        <button onClick={() => startEdit(m)}>Edit</button>
-                        <button onClick={() => deleteMutation.mutate(m.id)} style={{ marginLeft: '0.5rem' }}>Delete</button>
-                      </td>
-                    </>
-                  )}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </>
-      )}
-
-      <h2 style={{ marginTop: '2rem' }}>Results</h2>
-      {resultsLoading && <p>Loading results...</p>}
-      {resultsError && <p className="error">Failed to load results.</p>}
-      {results && (
-        <table className="athletes-table">
-          <thead>
-            <tr>
-              <th>Place</th>
-              <th>Athlete</th>
-              <th>Time</th>
-              <th>Meet</th>
-            </tr>
-          </thead>
-          <tbody>
-            {results.map(r => (
-              <tr key={r.id}>
-                <td>{r.place}</td>
-                <td>{r.athleteName}</td>
-                <td>{r.time}</td>
-                <td>{r.meetName}</td>
-              </tr>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Name</TableHead>
+              <TableHead>Date</TableHead>
+              <TableHead>Location</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {meets.map(m => (
+              <TableRow key={m.id}>
+                <TableCell>{m.name}</TableCell>
+                <TableCell>{m.date.slice(0, 10)}</TableCell>
+                <TableCell>{m.location}</TableCell>
+              </TableRow>
             ))}
-          </tbody>
-        </table>
+          </TableBody>
+        </Table>
       )}
 
-      {showAdd && (
-        <div className="modal-overlay" onClick={() => setShowAdd(false)}>
-          <div className="modal" onClick={e => e.stopPropagation()}>
-            <h2>Add Meet</h2>
-            <div className="modal-field">
-              <label>Name</label>
-              <input
-                value={addForm.name}
-                onChange={e => setAddForm(f => ({ ...f, name: e.target.value }))}
-                placeholder="Meet name"
-              />
-            </div>
-            <div className="modal-field">
-              <label>Date</label>
-              <input
-                type="date"
-                value={addForm.date}
-                onChange={e => setAddForm(f => ({ ...f, date: e.target.value }))}
-              />
-            </div>
-            <div className="modal-field">
-              <label>Location</label>
-              <input
-                value={addForm.location}
-                onChange={e => setAddForm(f => ({ ...f, location: e.target.value }))}
-                placeholder="City, GA"
-              />
-            </div>
-            <div className="modal-actions">
-              <button
-                className="add-btn"
-                onClick={() => createMutation.mutate(addForm)}
-                disabled={createMutation.isPending}
-              >
-                {createMutation.isPending ? 'Saving...' : 'Add Meet'}
-              </button>
-              <button onClick={() => setShowAdd(false)}>Cancel</button>
-            </div>
-            {createMutation.isError && <p className="error">Failed to add meet.</p>}
-          </div>
-        </div>
+      <h2 className="text-xl font-semibold text-foreground mt-10 mb-3">Results</h2>
+      {resultsLoading && <p className="text-muted-foreground">Loading results...</p>}
+      {resultsError && <p className="text-destructive">Failed to load results.</p>}
+      {results && (
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Place</TableHead>
+              <TableHead>Athlete</TableHead>
+              <TableHead>Time</TableHead>
+              <TableHead>Meet</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {results.map(r => (
+              <TableRow key={r.id}>
+                <TableCell>{r.place}</TableCell>
+                <TableCell>{r.athleteName}</TableCell>
+                <TableCell>{r.time}</TableCell>
+                <TableCell>{r.meetName}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
       )}
     </div>
   )

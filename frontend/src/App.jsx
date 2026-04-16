@@ -1,4 +1,6 @@
 import { Routes, Route } from 'react-router-dom'
+import { AuthProvider } from '@/context/AuthContext'
+import ProtectedRoute from '@/components/ProtectedRoute'
 import Navbar from './components/Navbar'
 import Home from './pages/Home'
 import Fellowship from './pages/Fellowship'
@@ -12,11 +14,13 @@ import Boromir from './pages/Boromir'
 import Merry from './pages/Merry'
 import Pippin from './pages/Pippin'
 import Meets from './pages/Meets'
+import Login from './pages/Login'
+import Admin from './pages/Admin'
 import './App.css'
 
 function App() {
   return (
-    <>
+    <AuthProvider>
       <Navbar />
       <main className="content">
         <Routes>
@@ -32,9 +36,11 @@ function App() {
           <Route path="/merry" element={<Merry />} />
           <Route path="/pippin" element={<Pippin />} />
           <Route path="/meets" element={<Meets />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
         </Routes>
       </main>
-    </>
+    </AuthProvider>
   )
 }
 

@@ -1,9 +1,11 @@
 import AthleteList from '../components/AthleteList'
+import TodayDate from '../components/TodayDate'
 
 function Home() {
   return (
-    <div className="athletes-page">
-      <h1>Athletes</h1>
+    <div>
+      <h1 className="text-4xl font-bold text-primary mb-2">Athletes</h1>
+      <TodayDate />
       <AthleteList />
     </div>
   )
