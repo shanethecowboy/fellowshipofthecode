@@ -16,6 +16,7 @@ import Pippin from './pages/Pippin'
 import Meets from './pages/Meets'
 import Login from './pages/Login'
 import Admin from './pages/Admin'
+import Tracker from './pages/Tracker'
 import './App.css'
 
 function App() {
@@ -38,6 +39,7 @@ function App() {
           <Route path="/meets" element={<Meets />} />
           <Route path="/login" element={<Login />} />
           <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
+          <Route path="/tracker" element={<Tracker />} />
         </Routes>
       </main>
     </AuthProvider>
